@@ -22,3 +22,8 @@ workflows:
   automated-api-tests:
     jobs:
       - automated-api-tests
+      - send-notification:
+          context:
+            - slack-secrets
+          requires:
+            - automated-api-tests
