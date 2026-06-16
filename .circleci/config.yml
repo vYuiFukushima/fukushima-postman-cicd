@@ -1,6 +1,8 @@
 version: 2.1
+
 orbs:
   slack: circleci/slack@4.13.3
+
 jobs:
   automated-api-tests:
     docker:
@@ -11,19 +13,27 @@ jobs:
           name: Install Postman CLI
           command: |
             curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+
       - run:
           name: Login using your API key
           command: postman login --with-api-key $POSTMAN_API_KEY
+
       - run: |
-            postman collection run "55936694-24333855-5a26-49c7-b76b-9d69f0e56305"
+          postman collection run "55936694-24333855-5a26-49c7-b76b-9d69f0e56305"
+
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
 workflows:
   version: 2
+
   automated-api-tests:
     jobs:
-      - automated-api-tests
-      - send-notification:
+      - automated-api-tests:
           context:
             - slack-secrets
-          requires:
-            - automated-api-tests
